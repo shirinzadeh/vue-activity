@@ -55,7 +55,11 @@
               </div>
               <div class="field is-grouped">
                 <div class="control">
-                  <button @click="createActivity" class="button is-link">
+                  <button
+                    @click="createActivity"
+                    :disabled="!isFormValid"
+                    class="button is-link"
+                  >
                     Create Activity
                   </button>
                 </div>
@@ -84,16 +88,23 @@
 </template>
 
 <script>
-import ActivityItem from "./components/ActivityItem.vue";
-
+import ActivityItem from "@/components/ActivityItem.vue";
+// ????? niye fetchactivites import edende {} ile yazilir. function olduguna gore?
+import {
+  fetchActivities,
+  fetchUser,
+  fetchCategories,
+} from "@/api"; /*@ yazanda avtomatik src faylindaki folderlere baxir. ic ice cox folder olsa noqte ile folder mueyyen etmek cetinlesecek
+                                        ./api da yazmaq olar, ./api/index de yazmaq olar. 
+                                        sadece ./api yazanda avtomatik api folder icinde index.js-e yonlenir.
+                                        eger api icinde js faylinin adi index deyilse ./api/fayl-adi seklinde yazilmalidir
+                                        */
 export default {
   name: "app",
-  components: { ActivityItem },
+  components: { ActivityItem }, //html template ActivityItem-e reference edirik
   data() {
+    //data vue-goalsda oldugu kimi object deyil, functiondir ve object return edir
     return {
-      message: "Davam et, öyrənməlisən!",
-      titleMessage: "Title Message Vue!!!!!",
-      isTextDisplayed: true,
       isFormDisplayed: false,
       employees: {
         first: {
@@ -109,40 +120,23 @@ export default {
         title: "",
         notes: "",
       },
-      user: {
-        name: "Filip Jerga",
-        id: "-Aj34jknvncx98812",
-      },
-      activities: {
-        1546968934: {
-          id: "1546968934",
-          title: "Learn Vue.js",
-          notes: "I started today and it was not good.",
-          progress: 0,
-          category: "1546969049",
-          createdAt: 1546969144391,
-          updatedAt: 1546969144391,
-        },
-        1546969212: {
-          id: "1546969212",
-          title: "Read Witcher Books",
-          notes: "These books are super nice",
-          progress: 0,
-          category: "1546969049",
-          createdAt: 1546969144391,
-          updatedAt: 1546969144391,
-        },
-      },
-      categories: {
-        1546969049: { text: "books" },
-        1546969225: { text: "movies" },
-      },
+      user: {},
+      activities: {},
+      categories: {},
     };
   },
-  methods: {
-    toggleTextDisplay() {
-      this.isTextDisplayed = !this.isTextDisplayed;
+  computed: {
+    isFormValid() {
+      return this.newActivity.title && this.newActivity.notes;
     },
+  },
+  created() {
+    //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
+    this.activities = fetchActivities();
+    this.user = fetchUser();
+    this.categories = fetchCategories();
+  },
+  methods: {
     toggleFormDisplay() {
       this.isFormDisplayed = !this.isFormDisplayed;
       this.isButtonDisplayed = !this.isButtonDisplayed;
