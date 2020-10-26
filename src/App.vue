@@ -4,7 +4,8 @@
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
-          <h1>Activity Planner</h1>
+          <h1>{{ fullAppName }}</h1>
+          <!-- <h1>{{ wathcedAppName }}</h1> -->
         </div>
       </div>
     </nav>
@@ -53,6 +54,20 @@
                   ></textarea>
                 </div>
               </div>
+              <div class="field">
+                <label class="label">Notes</label>
+                <div class="control">
+                  <select v-model="newActivity.category" class="select">
+                    <option disabled value="">Please select one</option>
+                    <option v-for="category in categories" :key="category.id">
+                      {{ category.text }}
+                      <!-- bu kodda, optionda neyi secsek, vue consoleda da newactivity-nin category bolmesinde o gorsenecek.
+                      cunki v-model ile optiondan elde etdiyimizi ora yaziriq.
+                      :value="category.id" de elave etsek, newactivity ctegory-ye gondereceyimiz deyer categorynin id-si olacaq  -->
+                    </option>
+                  </select>
+                </div>
+              </div>
               <div class="field is-grouped">
                 <div class="control">
                   <button
@@ -80,6 +95,10 @@
               v-bind:key="activity.id"
             >
             </ActivityItem>
+            <div class="activity-length">
+              Currently {{ activityLength }} activities
+            </div>
+            <div class="activity-motivation">{{ activityMotivation }}</div>
           </div>
         </div>
       </div>
@@ -106,6 +125,9 @@ export default {
     //data vue-goalsda oldugu kimi object deyil, functiondir ve object return edir
     return {
       isFormDisplayed: false,
+      creator: "Tahmasib Shirinzada",
+      appName: "Activity Planner",
+      wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
       employees: {
         first: {
           name: "tuh",
@@ -119,6 +141,7 @@ export default {
       newActivity: {
         title: "",
         notes: "",
+        category: "",
       },
       user: {},
       activities: {},
@@ -129,7 +152,30 @@ export default {
     isFormValid() {
       return this.newActivity.title && this.newActivity.notes;
     },
+    fullAppName() {
+      return this.appName + " by " + this.creator;
+    },
+    activityLength() {
+      return Object.keys(this.activities).length;
+    },
+    activityMotivation() {
+      if (this.activityLength && this.activityLength <= 5) {
+        return "Nice to see some acitivities";
+      } else if (this.activityLength > 5) {
+        return "More than 5 activities";
+      } else {
+        return "No activities";
+      }
+    },
   },
+  // watch: {
+  //   creator(val) {
+  //     this.wathcedAppName = this.appName + " by " + val;
+  //   },
+  //   appName(val) {
+  //     this.wathcedAppName = val + " by " + this.creator;
+  //   },
+  // },
   created() {
     //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
     this.activities = fetchActivities();
@@ -220,5 +266,13 @@ article.post:last-child {
 .navbar-brand > h1 {
   font-size: 31px;
   padding: 20px;
+}
+
+.activity-length {
+  display: inline-block;
+}
+
+.activity-motivation {
+  float: right;
 }
 </style>
