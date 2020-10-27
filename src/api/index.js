@@ -21,6 +21,23 @@ export const fetchActivities = () => {
   }
 }
 
+//get some unique identifier
+const generateUid = () => Math.floor(new Date() * Math.random())
+//we will get here newActivity
+export const createActivityAPI = (activity) => {
+  activity.id = generateUid()
+  activity.progress = 0
+  activity.updatedAt = new Date()
+  activity.createdAt = new Date()
+
+  // return activity
+
+  // apilarla islediyimiz ucun bize response async olaraq qayidir . ona gore promisela yazilmalidi
+  return new Promise((resolve, reject) => {
+    resolve(activity)
+  })
+}
+
 export const fetchUser = () => {
   return {
     name: "Filip Jerga",

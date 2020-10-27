@@ -23,69 +23,13 @@
     <section class="container">
       <div class="columns">
         <div class="column is-3">
-          <a
-            @click="toggleFormDisplay"
-            v-if="!isFormDisplayed"
-            class="button is-primary is-block is-alt is-large"
-            href="#"
-            >New Activity</a
-          >
-          <div v-if="isFormDisplayed" class="create-form">
-            <h2>Create Activity</h2>
-            <form>
-              <div class="field">
-                <label class="label">Title</label>
-                <div class="control">
-                  <input
-                    v-model="newActivity.title"
-                    class="input"
-                    type="text"
-                    placeholder="Read a Book"
-                  />
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Notes</label>
-                <div class="control">
-                  <textarea
-                    v-model="newActivity.notes"
-                    class="textarea"
-                    placeholder="Textarea"
-                  ></textarea>
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Notes</label>
-                <div class="control">
-                  <select v-model="newActivity.category" class="select">
-                    <option disabled value="">Please select one</option>
-                    <option v-for="category in categories" :key="category.id">
-                      {{ category.text }}
-                      <!-- bu kodda, optionda neyi secsek, vue consoleda da newactivity-nin category bolmesinde o gorsenecek.
-                      cunki v-model ile optiondan elde etdiyimizi ora yaziriq.
-                      :value="category.id" de elave etsek, newactivity ctegory-ye gondereceyimiz deyer categorynin id-si olacaq  -->
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="field is-grouped">
-                <div class="control">
-                  <button
-                    @click="createActivity"
-                    :disabled="!isFormValid"
-                    class="button is-link"
-                  >
-                    Create Activity
-                  </button>
-                </div>
-                <div class="control">
-                  <button @click="toggleFormDisplay" class="button is-text">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+          <!-- child elementde(ActivityCreate) activityCreated eventi emit olanda,parent elementde(App.vue) @activityCreated yazaraq catch edirik.
+          bu event emitted olanda da addActivity function cagiririq, sonrasinda methodda addActivity funct yaradiriq -->
+          <!-- sending categories value to categories props. birincisi propsdu, ikincisi value -->
+          <ActivityCreate
+            @activityCreated="addActivity"
+            :categories="categories"
+          />
         </div>
         <div class="column is-9">
           <div class="box content">
@@ -107,7 +51,9 @@
 </template>
 
 <script>
+import Vue from "vue";
 import ActivityItem from "@/components/ActivityItem.vue";
+import ActivityCreate from "@/components/ActivityCreate.vue";
 // ????? niye fetchactivites import edende {} ile yazilir. function olduguna gore?
 import {
   fetchActivities,
@@ -120,11 +66,10 @@ import {
                                         */
 export default {
   name: "app",
-  components: { ActivityItem }, //html template ActivityItem-e reference edirik
+  components: { ActivityItem, ActivityCreate }, //html template ActivityItem-e reference edirik
   data() {
     //data vue-goalsda oldugu kimi object deyil, functiondir ve object return edir
     return {
-      isFormDisplayed: false,
       creator: "Tahmasib Shirinzada",
       appName: "Activity Planner",
       wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
@@ -138,20 +83,12 @@ export default {
           id: "534",
         },
       },
-      newActivity: {
-        title: "",
-        notes: "",
-        category: "",
-      },
       user: {},
       activities: {},
       categories: {},
     };
   },
   computed: {
-    isFormValid() {
-      return this.newActivity.title && this.newActivity.notes;
-    },
     fullAppName() {
       return this.appName + " by " + this.creator;
     },
@@ -183,12 +120,13 @@ export default {
     this.categories = fetchCategories();
   },
   methods: {
-    toggleFormDisplay() {
-      this.isFormDisplayed = !this.isFormDisplayed;
-      this.isButtonDisplayed = !this.isButtonDisplayed;
-    },
-    createActivity() {
-      alert(this.newActivity.title, this.newActivity.notes);
+    //we will get our new activity
+    addActivity(newActivity) {
+      /*bir object diger objecte Vue.set() ile elave edilir. moterizede 3 deyer girilir.
+      1ci hansi objecte elave edilecek, 2ci hansi key adinda objecti bu objecte elave edesiyik, 3cu elave edilecek object*/
+      Vue.set(this.activities, newActivity.id, newActivity);
+      /* console.log(newActivity); consoleda object formasinda category,notes,title cixacaq. 
+      amma biz hem de id,progress,updatedat,createdat de elde etmeliyik. ona gore index.js-de yeni funct yaradib, bu melumatlari ora elave edirik*/
     },
   },
 };
