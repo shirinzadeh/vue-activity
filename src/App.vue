@@ -32,17 +32,40 @@
           />
         </div>
         <div class="column is-9">
-          <div class="box content">
-            <ActivityItem
-              v-for="activity in activities"
-              v-bind:activity="activity"
-              v-bind:key="activity.id"
-            >
-            </ActivityItem>
-            <div class="activity-length">
-              Currently {{ activityLength }} activities
+          <!-- if is fetching true, we assign to div fetching class.. if we have error, assign div has-error class  -->
+          <!-- has-error`da tire olduguna gore dirnaq icinde yazmaliyiq, fetching classini dirnaq icinde yazmaga ehtiyac yoxdur 
+            when we use dash(-) we cannot write as a key of obkect(has-error). so we write it inside ' ', 
+            because dash is now allowed when we are providing key to our object -->
+          <div
+            class="box content"
+            :class="{ fetching: isFetching, 'has-error': error }"
+          >
+            <!--baslangicda error null-dur.api-da promise reject olanda catch() ile err receive edib, object error-a beraber etmisdik.
+            belelikle promise reject olsa rejecte ne yazmisiqsa error objectimiz icinde o olur. -->
+            <!-- bu kodda da eger error varsa, error display etsin, yoxdusa ActivityItem display etsin  -->
+            <!-- v-for ile v-else qarismasin deye ActivityItem-i div-e aliriq -->
+            <div v-if="error">{{ error }}</div>
+
+            <!-- fetching oldugu 2 saniye erzinde Loading... yazisi gorsedecek. bu divi ActivityItem-den sonra da yazmaq olar -->
+            <div v-if="isFetching">Loading...</div>
+
+            <div v-else>
+              <ActivityItem
+                v-for="activity in activities"
+                v-bind:activity="activity"
+                v-bind:key="activity.id"
+              >
+              </ActivityItem>
             </div>
-            <div class="activity-motivation">{{ activityMotivation }}</div>
+
+            <!-- bura v-if yazmasaq fetching oldugu 2 saniye erzinde Loading...-in asagisinda 'Currently activities' yazisi gorsenir.
+fetching true-dusa bu yazi gorsenirse, fetching false olanda gorsenmeyecek -->
+            <div v-if="!isFetching">
+              <div class="activity-length">
+                Currently {{ activityLength }} activities
+              </div>
+              <div class="activity-motivation">{{ activityMotivation }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -73,6 +96,8 @@ export default {
       creator: "Tahmasib Shirinzada",
       appName: "Activity Planner",
       // wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
+      isFetching: false,
+      error: null,
       user: {},
       activities: {},
       categories: {},
@@ -104,16 +129,22 @@ export default {
   //   },
   // },
   created() {
-    //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
-    fetchActivities()
-      /*then() - moterize icerisinde eslinde data-dir. biz datamizin activity oldugunu bilirik deye then(activity) yazdiq. ferqi yoxdur*/
-      .then((activities) => {
-        // component activitiesi (activities:{}), then() blokundan qebul etdiyimiz activities-e beraber edirik
-        this.activities = activities;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    //before fetching activities we set isFetching to true, because we are fetching data
+    (this.isFetching = true),
+      //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
+      fetchActivities()
+        /*then() - moterize icerisinde eslinde data-dir. biz datamizin activity oldugunu bilirik deye then(activity) yazdiq. ferqi yoxdur*/
+        .then((activities) => {
+          // component activitiesi (activities:{}), then() blokundan qebul etdiyimiz activities-e beraber edirik
+          this.activities = activities;
+          //when our data is resolved, we can sey isfetching to false
+          this.isFetching = false;
+        })
+        //
+        .catch((err) => {
+          this.error = err; // err - apida promise reject olanda cixan netice
+          this.isFetching = false; //if we receive error that means we are not fetching any data
+        });
     this.user = fetchUser();
     this.categories = fetchCategories();
   },
@@ -145,6 +176,12 @@ body {
 }
 footer {
   background-color: #f2f6fa !important;
+}
+.fetching {
+  border: 2px solid orange;
+}
+.has-error {
+  border: 2px solid red;
 }
 .topNav {
   border-top: 5px solid #3498db;
