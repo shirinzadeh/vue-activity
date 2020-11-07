@@ -72,7 +72,7 @@ export default {
     return {
       creator: "Tahmasib Shirinzada",
       appName: "Activity Planner",
-      wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
+      // wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
       user: {},
       activities: {},
       categories: {},
@@ -110,6 +110,9 @@ export default {
       .then((activities) => {
         // component activitiesi (activities:{}), then() blokundan qebul etdiyimiz activities-e beraber edirik
         this.activities = activities;
+      })
+      .catch((err) => {
+        console.log(err);
       });
     this.user = fetchUser();
     this.categories = fetchCategories();

@@ -102,15 +102,12 @@ export default {
       this.newActivity.category = "";
     },
     createActivity() {
-      createActivityAPI({ ...this.newActivity })
-        .then((activity) => {
-          this.resetActivity();
-          this.isFormDisplayed = false;
-          this.$emit("activityCreated", { ...activity }); // ... means copy of this object
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      createActivityAPI({ ...this.newActivity }).then((activity) => {
+        this.resetActivity();
+        this.isFormDisplayed = false;
+        this.$emit("activityCreated", { ...activity }); // ... means copy of this object
+      });
+
       //activityCreated -emitting event name
       // this.newActivity - providing newactivity object we are filling in our form
       // this.$emit("activityCreated", this.newActivity);
