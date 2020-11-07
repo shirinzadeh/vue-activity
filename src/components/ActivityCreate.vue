@@ -83,7 +83,12 @@ export default {
   },
   computed: {
     isFormValid() {
-      return this.newActivity.title && this.newActivity.notes;
+      //when title notes and category sections are full,form is valid
+      return (
+        this.newActivity.title &&
+        this.newActivity.notes &&
+        this.newActivity.category
+      );
     },
   },
   methods: {
@@ -91,10 +96,21 @@ export default {
       this.isFormDisplayed = !this.isFormDisplayed;
       this.isButtonDisplayed = !this.isButtonDisplayed;
     },
+    resetActivity() {
+      this.newActivity.title = "";
+      this.newActivity.notes = "";
+      this.newActivity.category = "";
+    },
     createActivity() {
-      createActivityAPI(this.newActivity).then((activity) => {
-        this.$emit("activityCreated", { ...activity });
-      });
+      createActivityAPI({ ...this.newActivity })
+        .then((activity) => {
+          this.resetActivity();
+          this.isFormDisplayed = false;
+          this.$emit("activityCreated", { ...activity }); // ... means copy of this object
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       //activityCreated -emitting event name
       // this.newActivity - providing newactivity object we are filling in our form
       // this.$emit("activityCreated", this.newActivity);

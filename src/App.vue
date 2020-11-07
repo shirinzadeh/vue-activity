@@ -73,16 +73,6 @@ export default {
       creator: "Tahmasib Shirinzada",
       appName: "Activity Planner",
       wathcedAppName: "Activity Planner by Tahmasib Shirinzada",
-      employees: {
-        first: {
-          name: "tuh",
-          id: "253",
-        },
-        second: {
-          name: "reus",
-          id: "534",
-        },
-      },
       user: {},
       activities: {},
       categories: {},
@@ -115,7 +105,12 @@ export default {
   // },
   created() {
     //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
-    this.activities = fetchActivities();
+    fetchActivities()
+      /*then() - moterize icerisinde eslinde data-dir. biz datamizin activity oldugunu bilirik deye then(activity) yazdiq. ferqi yoxdur*/
+      .then((activities) => {
+        // component activitiesi (activities:{}), then() blokundan qebul etdiyimiz activities-e beraber edirik
+        this.activities = activities;
+      });
     this.user = fetchUser();
     this.categories = fetchCategories();
   },
