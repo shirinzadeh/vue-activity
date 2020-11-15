@@ -36,8 +36,14 @@
           <div class="control">
             <select v-model="newActivity.category" class="select">
               <option disabled value="">Please select one</option>
-              <option v-for="category in categories" :key="category.id">
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.text }}
+                <!--:value="" qeyd etmesek, category.text burda default value-du  -->
+
                 <!-- bu kodda, optionda neyi secsek, vue consoleda da newactivity-nin category bolmesinde o gorsenecek.
                       cunki v-model ile optiondan elde etdiyimizi ora yaziriq.
                       :value="category.id" de elave etsek, newactivity ctegory-ye gondereceyimiz deyer categorynin id-si olacaq  -->
@@ -70,7 +76,7 @@
 import { createActivityAPI } from "@/api";
 
 export default {
-  props: ["categories"],
+  props: ["categories"], //props must be strings when using array syntax
   data() {
     return {
       isFormDisplayed: false,
@@ -105,7 +111,7 @@ export default {
       createActivityAPI({ ...this.newActivity }).then((activity) => {
         this.resetActivity();
         this.isFormDisplayed = false;
-        this.$emit("activityCreated", { ...activity }); // ... means copy of this object
+        this.$emit("activityCreated", { ...activity }); // ... means copy of this object???
       });
 
       //activityCreated -emitting event name

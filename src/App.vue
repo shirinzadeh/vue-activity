@@ -1,5 +1,7 @@
 <template>
-  <div id="activityApp">
+  <!-- eger activities ve categoriesimiz varsa, yeni bos deyilse, display our components.
+  oncesinde v-if="activities && categories" yazilib. daha yaxsi gorsensin deye computed propery yaradildi  -->
+  <div v-if="isDataLoaded" id="activityApp">
     <!-- burdaki activityApp id'sinin app id'si ile elaqesi yoxdur. bu id sadece htmli style etmek ucundur -->
     <nav class="navbar is-white topNav">
       <div class="container">
@@ -9,17 +11,7 @@
         </div>
       </div>
     </nav>
-    <nav class="navbar is-white">
-      <div class="container">
-        <div class="navbar-menu">
-          <div class="navbar-start">
-            <a class="navbar-item is-active" href="#">Newest</a>
-            <a class="navbar-item" href="#">In Progress</a>
-            <a class="navbar-item" href="#">Finished</a>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <TheNavbar />
     <section class="container">
       <div class="columns">
         <div class="column is-3">
@@ -27,8 +19,8 @@
           bu event emitted olanda da addActivity function cagiririq, sonrasinda methodda addActivity funct yaradiriq -->
           <!-- sending categories value to categories props. birincisi propsdu, ikincisi value -->
           <ActivityCreate
-            @activityCreated="addActivity"
             :categories="categories"
+            @activityCreated="addActivity"
           />
         </div>
         <div class="column is-9">
@@ -52,8 +44,9 @@
             <div v-else>
               <ActivityItem
                 v-for="activity in activities"
-                v-bind:activity="activity"
-                v-bind:key="activity.id"
+                :activity="activity"
+                :categories="categories"
+                :key="activity.id"
               >
               </ActivityItem>
             </div>
@@ -75,8 +68,9 @@ fetching true-dusa bu yazi gorsenirse, fetching false olanda gorsenmeyecek -->
 
 <script>
 import Vue from "vue";
-import ActivityItem from "@/components/ActivityItem.vue";
-import ActivityCreate from "@/components/ActivityCreate.vue";
+import ActivityItem from "@/components/ActivityItem";
+import ActivityCreate from "@/components/ActivityCreate";
+import TheNavbar from "@/components/TheNavbar";
 // ????? niye fetchactivites import edende {} ile yazilir. function olduguna gore?
 import {
   fetchActivities,
@@ -89,7 +83,7 @@ import {
                                         */
 export default {
   name: "app",
-  components: { ActivityItem, ActivityCreate }, //html template ActivityItem-e reference edirik
+  components: { ActivityItem, ActivityCreate, TheNavbar }, //html template ActivityItem-e reference edirik
   data() {
     //data vue-goalsda oldugu kimi object deyil, functiondir ve object return edir
     return {
@@ -99,8 +93,12 @@ export default {
       isFetching: false,
       error: null,
       user: {},
-      activities: {},
-      categories: {},
+      /* ilk basda activities ve categories empty objectdir. Bele olanda activityApp-de v-if hemise pass kececek.
+      buna gore activities ve categories null etmeliyik. cunki  bizim bu deyerimiz yoxdur, empty obkect olsa da bele*/
+      // activities: {},
+      // categories: {},
+      activities: null,
+      categories: null,
     };
   },
   computed: {
@@ -118,6 +116,9 @@ export default {
       } else {
         return "No activities";
       }
+    },
+    isDataLoaded() {
+      return this.activities && this.categories;
     },
   },
   // watch: {
@@ -146,7 +147,11 @@ export default {
           this.isFetching = false; //if we receive error that means we are not fetching any data
         });
     this.user = fetchUser();
-    this.categories = fetchCategories();
+    // this.categories = fetchCategories(); evvel bele idi. fakeApi.jsde promise return etdik deye, fetchcategoriese then() elave etmeliyik
+    /* in a promise we receive data in then() */
+    fetchCategories().then((categories) => {
+      this.categories = categories;
+    });
   },
   methods: {
     //we will get our new activity

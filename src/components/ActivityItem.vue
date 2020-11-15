@@ -1,6 +1,10 @@
 <template>
   <article class="post">
     <h4>{{ activity.title }}</h4>
+    <!-- burda categories-i 1 saniye vaxt sonra aliriq. 1 saniye vaxta qeder categories-in ici bos olur. ona gore de consoleda text undefined error aliriq.
+    bunun qarsisini almaq ucun App.vue id="activityApp"-e v-if veririk -->
+    <p>{{ textUtility_capitalize(categories[activity.category].text) }}</p>
+    <p>{{ activity.notes }}</p>
     <div class="media">
       <div class="media-left">
         <p class="image is-32x32">
@@ -10,23 +14,66 @@
       <div class="media-content">
         <div class="content">
           <p>
-            <a href="#">Filip Jerga</a> updated {{ activity.updatedAt }} minutes
-            ago &nbsp;
+            <a href="#">Filip Jerga</a> updated
+            {{ activity.updatedAt | prettyTime }} &nbsp;
+            <!-- prettyTime - filter functiondir  -->
           </p>
         </div>
       </div>
       <div class="media-right">
-        <span>Progress Bar Here</span>
+        <span
+          >Progress
+          <!-- :style-daki color class color yox, color:red-deki colordu ve 
+          style ile yazanda css style taginde color-red:{color:red} kimi classlar elave etmeye ehtiyac yoxdur -->
+          <!-- <span :class="'color-' + activityProgress" -->
+          <span :style="{ color: activityProgress }"
+            >{{ activity.progress }} %</span
+          >
+        </span>
       </div>
     </div>
   </article>
 </template>
 
 <script>
+import textUtility from "@/mixins/textUtility";
 export default {
-  props: ["activity"],
+  mixins: [textUtility],
+  props: ["categories", "activity"],
+  data() {
+    return {};
+  },
+  computed: {
+    activityProgress() {
+      const progress = this.activity.progress;
+
+      if (progress <= 0) {
+        return "red";
+      } else if (progress <= 50) {
+        return "orange";
+      } else {
+        return "green";
+      }
+    },
+  },
+  methods: {},
 };
 </script>
 
 <style scoped>
+/* templatede :class ile style deyisende css styleda da classlar elave etmeliyik,
+yox eger :style ile yaziriqsa, css styleda class elave etmeye ehtiyac yoxdur. ona gore commente alinib */
+/* .color-red {
+  color: red;
+}
+.color-orange {
+  color: orange;
+}
+.color-green {
+  color: green;
+} */
+
+.post h4 {
+  margin-bottom: 5px;
+}
 </style>
