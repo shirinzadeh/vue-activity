@@ -98,6 +98,14 @@ class FakeApi {
     })
   }
 
+  delete(resource, item) {
+    return new Promise((resolve, reject) => {
+      delete data[resource][item.id]
+      resolve(item)
+      /**resolve edirik ki then() blokuna data versin */
+    })
+  }
+
   asyncCall(callback) {
     setTimeout(callback, 1000);
   }

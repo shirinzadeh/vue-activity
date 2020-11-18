@@ -47,6 +47,7 @@
                 :activity="activity"
                 :categories="categories"
                 :key="activity.id"
+                @activityDeleted="handleActivityDelete"
               >
               </ActivityItem>
             </div>
@@ -76,6 +77,7 @@ import {
   fetchActivities,
   fetchUser,
   fetchCategories,
+  deleteActivityAPI,
 } from "@/api"; /*@ yazanda avtomatik src faylindaki folderlere baxir. ic ice cox folder olsa noqte ile folder mueyyen etmek cetinlesecek
                                         ./api da yazmaq olar, ./api/index de yazmaq olar. 
                                         sadece ./api yazanda avtomatik api folder icinde index.js-e yonlenir.
@@ -161,6 +163,18 @@ export default {
       Vue.set(this.activities, newActivity.id, newActivity);
       /* console.log(newActivity); consoleda object formasinda category,notes,title cixacaq. 
       amma biz hem de id,progress,updatedat,createdat de elde etmeliyik. ona gore index.js-de yeni funct yaradib, bu melumatlari ora elave edirik*/
+    },
+    handleActivityDelete(activity) {
+      /**deleteActivityAPI(activity) --- activityni silmek istediyimiz ucun moterizeye activity yaziriq
+       * then() we will get activity inside then. but specify it deletedActivity.. cunki then icerisinde aldigimiz bu activity sileceyimiz activitydi
+       * eslinde then blokunda moterize icerisine ne yazagamizin onemi yoxdu. cunki thende qayidan data-di. sadece kod anlasilan olsun deye  yazilir
+       */
+      deleteActivityAPI(activity).then((deletedActivity) => {
+        Vue.delete(
+          this.activities,
+          deletedActivity.id
+        ); /**bu setri yazmadan da bizim activity silinir, sadece browserde app vueda da silinmesi ucun yazilmalidir*/
+      });
     },
   },
 };

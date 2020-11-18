@@ -1,6 +1,12 @@
 <template>
   <article class="post">
-    <h4>{{ activity.title }}</h4>
+    <div class="activity-title-wrapper">
+      <h4 class="activity-title">{{ activity.title }}</h4>
+      <i
+        class="fas fa-cog activity-settings"
+        @click="isMenuDisplayed = !isMenuDisplayed"
+      />
+    </div>
     <!-- burda categories-i 1 saniye vaxt sonra aliriq. 1 saniye vaxta qeder categories-in ici bos olur. ona gore de consoleda text undefined error aliriq.
     bunun qarsisini almaq ucun App.vue id="activityApp"-e v-if veririk -->
     <p>{{ textUtility_capitalize(categories[activity.category].text) }}</p>
@@ -32,6 +38,10 @@
         </span>
       </div>
     </div>
+    <div v-if="isMenuDisplayed" class="activity-controll">
+      <a class="button is-warning">Edit</a>
+      <a class="button is-danger" @click="deleteActivity">Delete</a>
+    </div>
   </article>
 </template>
 
@@ -41,7 +51,9 @@ export default {
   mixins: [textUtility],
   props: ["categories", "activity"],
   data() {
-    return {};
+    return {
+      isMenuDisplayed: false,
+    };
   },
   computed: {
     activityProgress() {
@@ -56,11 +68,15 @@ export default {
       }
     },
   },
-  methods: {},
+  methods: {
+    deleteActivity() {
+      this.$emit("activityDeleted", this.activity);
+    },
+  },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /* templatede :class ile style deyisende css styleda da classlar elave etmeliyik,
 yox eger :style ile yaziriqsa, css styleda class elave etmeye ehtiyac yoxdur. ona gore commente alinib */
 /* .color-red {
@@ -75,5 +91,23 @@ yox eger :style ile yaziriqsa, css styleda class elave etmeye ehtiyac yoxdur. on
 
 .post h4 {
   margin-bottom: 5px;
+}
+
+.activity-title {
+  margin-bottom: 5px;
+  display: inline-block;
+}
+.activity-settings {
+  float: right;
+  font-size: 22px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+.activity-controll {
+  margin: 20px 0 0 0;
+  a {
+    margin-right: 5px;
+  }
 }
 </style>

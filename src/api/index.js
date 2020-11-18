@@ -52,3 +52,8 @@ export const createActivityAPI = (activity) => {
   /**fakeApi-da post() yazdiqdan sonra bu formada return edirik */
   return fakeApi.post('activities', activity) //we want to add this under activities, and want to save our activity
 }
+
+export const deleteActivityAPI = (activity) => {
+  return fakeApi.delete('activities', activity)
+  /** 'activities - resourcedu, activity - item */
+}
