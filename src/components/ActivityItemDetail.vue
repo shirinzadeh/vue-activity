@@ -58,6 +58,8 @@
 
 <script>
 import textUtility from "@/mixins/textUtility";
+import store from "@/store";
+
 export default {
   mixins: [textUtility],
   props: ["categories", "activity"],
@@ -82,7 +84,12 @@ export default {
   methods: {
     deleteActivity() {
       /**eventi emit edende child-dan parente gedir. ona gore parent hansidirsa, orda emiti qebul etmelisen */
-      this.$emit("activityDeleted", this.activity);
+      /**storedan sonra emit eventi silinir. cunki artiq apilarla islemirik */
+      // this.$emit("activityDeleted", this.activity);
+      store.deleteActivity(this.activity);
+      /* store.deleteActivity() storedaki deleteActivitydir, methods deyil. moterize icerisine de sileceyimiz activityni yaziriq .
+      yazdiqdan sonra storedaki deleteactivity-ye then() elave ederek improve edirik
+      */
     },
   },
 };

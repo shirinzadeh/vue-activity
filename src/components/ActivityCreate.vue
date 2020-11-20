@@ -74,6 +74,7 @@
 
 <script>
 import { createActivityAPI } from "@/api";
+import store from "@/store";
 
 export default {
   props: ["categories"], //props must be strings when using array syntax
@@ -108,11 +109,17 @@ export default {
       this.newActivity.category = "";
     },
     createActivity() {
-      createActivityAPI({ ...this.newActivity }).then((activity) => {
+      store.createActivity({ ...this.newActivity }).then((activity) => {
         this.resetActivity();
         this.isFormDisplayed = false;
-        this.$emit("activityCreated", { ...activity }); // ... means copy of this object???
       });
+
+      /**artiq store ile islediyimize gore bu kodlar silinir */
+      // createActivityAPI({ ...this.newActivity }).then((activity) => {
+      //   this.resetActivity();
+      //   this.isFormDisplayed = false;
+      //   this.$emit("activityCreated", { ...activity }); // ... means copy of this object???
+      // });
 
       //activityCreated -emitting event name
       // this.newActivity - providing newactivity object we are filling in our form
