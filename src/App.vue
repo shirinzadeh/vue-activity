@@ -11,7 +11,9 @@
         </div>
       </div>
     </nav>
-    <TheNavbar />
+
+    <TheNavbar @filterSelected="setFilter" />
+
     <section class="container">
       <div class="columns">
         <div class="column is-3">
@@ -43,7 +45,7 @@
               <!-- isdataloaded evvel #activityApp divine yazilmisdi. Ancaq ele olanda activityleri silende, ekranda hec ne gorsenmir  -->
               <div v-if="isDataLoaded">
                 <ActivityItem
-                  v-for="activity in activities"
+                  v-for="activity in filteredActivities"
                   :activity="activity"
                   :categories="categories"
                   :key="activity.id"
@@ -126,9 +128,44 @@ export default {
       */
       activities,
       categories,
+      filter: "all",
     };
   },
   computed: {
+    filteredActivities() {
+      // let filteredActivities = {};
+      let condition;
+
+      if (this.filter === "all") {
+        return this.activities;
+      }
+      if (this.filter === "inprogress") {
+        condition = (value) => value > 0 && value < 100;
+        /**kommente alinan kodun qisaldilmisidir */
+        // condition = (value) => {
+        //   if(value > 0 && value < 100) {
+        //     return true
+        //   }else return false
+        // }
+      } else if (this.filter === "finished") {
+        condition = (value) => value === 100;
+      } else {
+        condition = (value) => value === 0;
+      }
+
+      //we get inside filter single activity
+      // filteredActivities = Object.values(this.activities)
+      return Object.values(this.activities).filter((activity) => {
+        /**silinen setr koddaki kimi de yazmaq olar ancaq ele her filtere ayrica kod yazanda uzun oldugu ucun
+         * condition function yaradilir. condition() icindeki value activity.progress verilir.
+         */
+        // return activity.progress > 0 && activity.progress < 100
+        return condition(activity.progress);
+      });
+
+      /** object value ozu filteredactivitiesi return edir deye, qarsisina return yazib, filteredactivities objectini ve return filteredactivitiesi silirik  */
+      // return filteredActivities;
+    },
     fullAppName() {
       return this.appName + " by " + this.creator;
     },
@@ -223,6 +260,10 @@ export default {
     //     ); /**bu setri yazmadan da bizim activity silinir, sadece browserde app vueda da silinmesi ucun yazilmalidir*/
     //   });
     // },
+
+    setFilter(filterOption) {
+      this.filter = filterOption;
+    },
   },
 };
 </script>

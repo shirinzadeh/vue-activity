@@ -3,9 +3,30 @@
     <div class="container">
       <div class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item is-active" href="#">Newest</a>
-          <a class="navbar-item" href="#">In Progress</a>
-          <a class="navbar-item" href="#">Finished</a>
+          <a
+            :class="{ 'is-active': filterOption === 'all' }"
+            class="navbar-item"
+            @click="emitFilter('all')"
+            >All</a
+          >
+          <a
+            :class="{ 'is-active': filterOption === '' }"
+            class="navbar-item"
+            @click="emitFilter('inprogress')"
+            >In Progress</a
+          >
+          <a
+            :class="{ 'is-active': filterOption === 'finished' }"
+            class="navbar-item"
+            @click="emitFilter('finished')"
+            >Finished</a
+          >
+          <a
+            :class="{ 'is-active': filterOption === 'notstarted' }"
+            class="navbar-item"
+            @click="emitFilter('notstarted')"
+            >Not started</a
+          >
         </div>
       </div>
     </div>
@@ -13,5 +34,16 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      filterOption: "all",
+    };
+  },
+  methods: {
+    emitFilter(filterOption) {
+      this.$emit("filterSelected", filterOption);
+    },
+  },
+};
 </script>

@@ -41,9 +41,10 @@
         </div>
       </div>
       <div class="media-right">
+        <!-- filterle isleyende progress reqemi string kimi yazilir. v.model.number edende reqeme cevrilir -->
         <input
           id="progress"
-          v-model="modifiedActivity.progress"
+          v-model.number="modifiedActivity.progress"
           type="range"
           name="progress"
           min="0"
