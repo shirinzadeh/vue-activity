@@ -1,7 +1,7 @@
 <template>
   <!-- eger activities ve categoriesimiz varsa, yeni bos deyilse, display our components.
   oncesinde v-if="activities && categories" yazilib. daha yaxsi gorsensin deye computed propery yaradildi  -->
-  <div v-if="isDataLoaded" id="activityApp">
+  <div id="activityApp">
     <!-- burdaki activityApp id'sinin app id'si ile elaqesi yoxdur. bu id sadece htmli style etmek ucundur -->
     <nav class="navbar is-white topNav">
       <div class="container">
@@ -37,20 +37,21 @@
             <!-- v-for ile v-else qarismasin deye ActivityItem-i div-e aliriq -->
             <div v-if="error">{{ error }}</div>
 
-            <!-- fetching oldugu 2 saniye erzinde Loading... yazisi gorsedecek. bu divi ActivityItem-den sonra da yazmaq olar -->
-            <div v-if="isFetching">Loading...</div>
-
             <div v-else>
-              <ActivityItem
-                v-for="activity in activities"
-                :activity="activity"
-                :categories="categories"
-                :key="activity.id"
-              >
-                <!-- @activityDeleted="handleActivityDelete" APilarla islediyimizde istifade etmisdik. store isledenden sonra silinir
+              <!-- fetching oldugu 2 saniye erzinde Loading... yazisi gorsedecek. bu divi ActivityItem-den sonra da yazmaq olar -->
+              <div v-if="isFetching">Loading...</div>
+              <!-- isdataloaded evvel #activityApp divine yazilmisdi. Ancaq ele olanda activityleri silende, ekranda hec ne gorsenmir  -->
+              <div v-if="isDataLoaded">
+                <ActivityItem
+                  v-for="activity in activities"
+                  :activity="activity"
+                  :categories="categories"
+                  :key="activity.id"
+                />
+              </div>
+              <!-- @activityDeleted="handleActivityDelete" APilarla islediyimizde istifade etmisdik. store isledenden sonra silinir
                 Bu kod eslinde activity item icinde olmalidir, sadece commente ala bilmek ucun çölünə çıxartdım
                 ve eventin yaratdigi function da methodsdan silinir-->
-              </ActivityItem>
             </div>
 
             <!-- bura v-if yazmasaq fetching oldugu 2 saniye erzinde Loading...-in asagisinda 'Currently activities' yazisi gorsenir.
@@ -142,8 +143,19 @@ export default {
         return "No activities";
       }
     },
+    activitiesLength() {
+      return Object.keys(this.activities).length;
+    },
+    categoriesLength() {
+      return Object.keys(this.categories).length;
+    },
     isDataLoaded() {
-      return this.activities && this.categories;
+      /**activities ve categories storedan eristikten sonra bu kod deyisir
+       * storeda activities ve categories array ilk basda emptydi, sonradan activity elave etdikce dolur.
+       * eger activities ve categories dolu objectdirse, yeni uzunlugu varsa, Datani yukle
+       */
+      // return this.activities && this.categories;
+      return this.activitiesLength && this.categoriesLength;
     },
   },
   // watch: {

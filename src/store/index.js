@@ -63,6 +63,17 @@ const store = {
       .then(createdActivity => {
         /**burda Vue.setle yazilir. ancaq Vue.seti abstract etdiyimiz ucun bele yazildi */
         this.setItem('activities', createdActivity.id, createdActivity)
+        return createdActivity;
+      })
+  },
+
+  activityUpdate(activity) {
+    activity.createdAt = new Date();
+
+    return fakeApi.post('activities', activity)
+      .then((updatedActivity) => {
+        this.setItem('activities', updatedActivity.id, updatedActivity)
+        return updatedActivity;
       })
   },
 

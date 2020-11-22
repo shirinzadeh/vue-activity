@@ -1,16 +1,14 @@
 <template>
   <article class="post">
     <div class="activity-title">
-      <!-- TODO: Add v-model -->
-      <input v-model="activity.title" type="text" class="input" />
       <i
         class="fas fa-cog activity-settings"
         @click="isMenuDisplayed = !isMenuDisplayed"
       />
+      <input v-model="modifiedActivity.title" type="text" class="input" />
     </div>
     <div class="activity-category">
-      <!-- TODO: add v-model and iterate categories in option  -->
-      <select v-model="activity.category" class="select">
+      <select v-model="modifiedActivity.category" class="select">
         <option disabled value="">Please select one</option>
         <option
           v-for="category in categories"
@@ -22,9 +20,8 @@
       </select>
     </div>
     <div class="control activity-notes">
-      <!-- TODO: Add v-model here -->
       <textarea
-        v-model="activity.notes"
+        v-model="modifiedActivity.notes"
         class="textarea"
         placeholder="Write some notes here"
       />
@@ -39,15 +36,14 @@
         <div class="content">
           <p>
             <a href="#">Filip Jerga</a> updated
-            {{ activity.updatedAt | prettyTime }} &nbsp;
+            {{ modifiedActivity.updatedAt | prettyTime }} &nbsp;
           </p>
         </div>
       </div>
       <div class="media-right">
-        <!-- TODO: Add v-model here -->
         <input
           id="progress"
-          v-model="activity.progress"
+          v-model="modifiedActivity.progress"
           type="range"
           name="progress"
           min="0"
@@ -55,13 +51,11 @@
           value="90"
           step="10"
         />
-        <label for="progress">{{ activity.progress }} %</label>
+        <label for="progress">{{ modifiedActivity.progress }} %</label>
       </div>
     </div>
     <div v-if="isMenuDisplayed" class="activity-controll">
-      <!-- TODO: create function 'updateActivity' to console log 'activity' -->
       <a class="button is-warning" @click="updateActivity()">Commit Update</a>
-      <!-- TODO: Emit Event to Cancel Edit Mode -->
       <a class="button is-danger" @click="$emit('toggle-update', false)"
         >Cancel</a
       >
@@ -71,6 +65,7 @@
 
 <script>
 import textUtility from "@/mixins/textUtility";
+import store from "@/store";
 
 export default {
   mixins: [textUtility],
@@ -86,12 +81,19 @@ export default {
   },
   data() {
     return {
-      isMenuDisplayed: false,
+      isMenuDisplayed: true,
+      /*propsdaki activity activityitemden gonderirilir. bu ekranda display olan activity ile eynidi. ona gore edit edib,cancel basanda activity de deyisir. 
+    deyismemesi ucun yeni modifiedActivity data yaradilir ve templatedeki butun activity-ler modifiedUpdate-le evez olunur*/
+      /**modifiedActivity - edit ederken deyisdirilen title, notes ve s. modifiedActivity objectinde yerlesir */
+      modifiedActivity: { ...this.activity },
     };
   },
   methods: {
     updateActivity() {
-      console.log(this.activity);
+      store.activityUpdate(this.modifiedActivity).then(() => {
+        /**edit penceresini baglayib, evvelki pencereye kecir */
+        this.$emit("toggle-update", false);
+      });
     },
   },
 };
@@ -100,7 +102,10 @@ export default {
 <style scoped lang="scss">
 .activity-title {
   margin-bottom: 10px;
-  display: flex;
+
+  i {
+    margin-bottom: 10px;
+  }
 }
 .activity-category {
   margin-bottom: 10px;
