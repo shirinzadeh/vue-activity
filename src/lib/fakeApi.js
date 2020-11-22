@@ -32,6 +32,24 @@ const data = {
 }
 
 class FakeApi {
+  fillDB() {
+    this.commitData(data);
+  }
+
+  /** data - activitydir */
+  commitData(data) {
+    /**setIteme 2 deyer girilir. birinci key, ikinci local storage-e store etmek istediyimiz
+     * data-ni object kimi save ede bilmerik, ona gore stringe cevirilmelidir/
+    */
+    localStorage.setItem('activity_data', JSON.stringify(data))
+  }
+
+  getData() {
+    const activityData = localStorage.getItem('activity_data')
+    /**localstoragedeki data stringe cevirdiyimize gore, activityData da string olduguna gore, objecte ceviriilir */
+    return JSON.parse(activityData);
+  }
+
   /*classlarda functionlar bele yazilmalidir. index.jsden copy edenden sonra constlar,arrow funct-lar silinir */
   canContinue() {
     const rndNumber = Math.floor(Math.random() * 10); //get random numbers b/w 1 and 10
@@ -66,6 +84,7 @@ class FakeApi {
     return new Promise((resolve, reject) => {
       this.asyncCall(() => {
         if (force || this.canContinue()) {
+          const data = this.getData(); /**bu setri elave ederek, datani localstorageden gelen data olur. bunu yazmasaq, data burda oz girdiyimiz datalara beraber olacaq */
           resolve({ ...data[resource] });
         } else {
           reject('Cannot fetch ' + resource)
@@ -90,17 +109,21 @@ class FakeApi {
   /**post(resource, payload) da yazmaq olar. bize baglidir */
   post(resource, item) {
     return new Promise((resolve, reject) => {
+      const data = this.getData();
       /**burda itemi, yeni datani, yeni activitiesi elde etmeliyik */
       /*data[resource] - datanin icindeki objectdir,yeni activities-di.
        data[resource][item] - activitiesin icindeki objectdir.yeni 1546968934 */
       data[resource][item.id] = item;
+      this.commitData(data);
       resolve(item)
     })
   }
 
   delete(resource, item) {
     return new Promise((resolve, reject) => {
+      const data = this.getData()
       delete data[resource][item.id]
+      this.commitData(data);
       resolve(item)
       /**resolve edirik ki then() blokuna data versin */
     })

@@ -72,6 +72,7 @@ fetching true-dusa bu yazi gorsenirse, fetching false olanda gorsenmeyecek -->
 <script>
 import Vue from "vue";
 import store from "./store";
+import fakeApi from "@/lib/fakeApi";
 
 import ActivityItem from "@/components/ActivityItem";
 import ActivityCreate from "@/components/ActivityCreate";
@@ -167,6 +168,9 @@ export default {
   //   },
   // },
   created() {
+    //DO NOT FORGET! WE JUST WRITE THIS CODE ONCE. AFTER STORE THE DATA IN LOCAL STORAGE, WE MUST COMMENT OR DELETE THIS LINE
+    // fakeApi.fillDB();
+
     //before fetching activities we set isFetching to true, because we are fetching data
     this.isFetching = true;
     //fetchActivities-i cagirmaliyiq. cagirmaq ucun variable assign etmeliyik. o da activities objectidir
